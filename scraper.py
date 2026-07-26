@@ -95,7 +95,14 @@ def search_business(business,location):
 
             if lead is not None:
                 lead["Location"] = location
-                leads.append(lead)
+                #we append if there exists entries
+                if (
+                        lead["Business Name"] != ""
+                        or lead["Phone Number"] != ""
+                        or lead["Website"] != ""
+                ):
+                 leads.append(lead)
+
 
 
         input("\nPress ENTER to close browser...")
