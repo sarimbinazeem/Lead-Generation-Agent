@@ -22,7 +22,13 @@ def main():
 
         print("\nLaunching browser...")
 
-        search_business(business_type, location  )   
+        businesses = search_business(business_type, location  )  
+        
+        print("\nBusinesses Found:")
+
+        for business in businesses:
+            print(f"- {business}")
+         
     
     except Exception as e:
         print("\nAn error occurred:")
