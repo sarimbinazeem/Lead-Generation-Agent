@@ -5,66 +5,59 @@ We use PlayWright for browser automation that can open google
 It can do the following:
 Open Chrome -> Click Buttons -> Type text -> page loads -> scroll -> read webpage data
 
+After Searching the businness and location through PlayWright, We will extract all the BUSINESS NAME frm the list
+
 """
 
 from playwright.sync_api import sync_playwright
 
 #we do synchronously
 
-def search_business(business,location):
+def open_google_maps(page):
     """
-    Helper Function
-    it launches chrome
-    it takes new page
-    goes to GOOOGLE map through URL
-    Searches the query through search box
+    Opens Google Maps
+
     """
 
-    search_query = f"{business} in {location}"
+    print("\nOpening Google Maps...")
 
-    #opens the playwright synchronusly
-    with sync_playwright() as p:
-        browser= p.chromium.launch(
-            headless=False, #opens the browser visibly
-        )
+    page.goto(
+        "https://www.google.com/maps",
+        timeout=60000
+    )
 
-        #takes page
-        page = browser.new_page()
+    #Wait for the  browser to render
 
-        print("\nOpening Google Maps...")
-        #Open maps through URL
-        page.goto(
-             "https://www.google.com/maps",
-             timeout=60000 #60 seconds timeout
-        )   
-        print(f"Page Title: {page.title()}")
+    page.wait_for_timeout(5000)
 
-        # Give Google Maps time to fully render
-        page.wait_for_timeout(5000)
-
-        print("Searching...")
-
-        # Locate the search box
-        search_box = page.get_by_role( "combobox", name="Search Google Maps"  )
-
-        # Wait until it becomes visible
-        search_box.wait_for(state="visible")
-
-        search_box.click()
+    print("Google Maps Loaded.\n")
 
 
-        #fills search with query
-        search_box.fill(search_query)
+def perform_search(page, search_query):
+    """
+    Searches the user query.
+    """
 
-        page.keyboard.press("Enter")
+    print("Searching...")
 
-        print("Waiting for results...")
-        #takes time so we do timeout
-        page.wait_for_timeout(6000)
+    # Locate the search box
+    search_box = page.get_by_role( "combobox", name="Search Google Maps"  )
+
+    # Wait until it becomes visible
+    search_box.wait_for(state="visible")
+
+    search_box.click()
 
 
-        print(f"\nSearch completed for: {search_query}")
+    #fills search with query
+    search_box.fill(search_query)
 
-        input("\nPress ENTER to close the browser...")
+    page.keyboard.press("Enter")
 
-        browser.close()        
+    print("Waiting for results...")
+    #takes time so we do timeout
+    page.wait_for_timeout(6000)
+
+
+    print(f"\nSearch completed for: {search_query}")
+    
