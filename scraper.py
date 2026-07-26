@@ -131,26 +131,45 @@ def search_business(business,location):
 
 def collect_business_names(page):
     """
-    Temporary debug function.
+    Collects the business name from the list of the search results
+
     """
 
-    print("=" * 50)
-    print("INSPECTING GOOGLE MAPS")
-    print("=" * 50)
+    print("Collecting business names...\n")
 
-    print("\nNumber of Links:")
-    print(page.locator("a").count())
+    business_names = []
 
-    print("\nNumber of Buttons:")
-    print(page.locator("button").count())
+    #the buttons are the business in BING Layout so we store it here
+    buttons = page.get_by_role("button")
 
-    print("\nNumber of Articles:")
-    print(page.locator("article").count())
+    #we loop through the buttons and put VALID Business name into the array
+    count = buttons.count()
 
-    print("\nNumber of List Items:")
-    print(page.locator("li").count())
+    print(f"Businesses detected: {count}")
 
-    print("\nNumber of Divs:")
-    print(page.locator("div").count())
+    for i in range(count):
+        try:
+            name = buttons.nth(i).inner_text().strip()
 
-    return []
+            #Skip if it is EMPTY button
+            if not name:
+                continue
+
+            lines = name.split("\n")
+            #Skip if the button name is LONGER Than 3 LINES!
+            if len(lines) < 3:
+                continue  
+
+            # Skip utility buttons
+            if lines[0] in ["Rating", "Hours", "Feedback"]:
+                continue
+
+            business_name = lines[0].strip()
+
+            if business_name not in business_names:
+                business_names.append(business_name)
+
+        except Exception:
+            continue
+
+    return business_names

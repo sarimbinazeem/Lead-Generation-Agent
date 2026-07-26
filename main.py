@@ -23,11 +23,11 @@ def main():
         print("\nLaunching browser...")
 
         businesses = search_business(business_type, location  )  
-        
+
         print("\nBusinesses Found:")
 
-        for business in businesses:
-            print(f"- {business}")
+        for index,business in enumerate(businesses,start=1):
+            print(f"{index}. {business}")
          
     
     except Exception as e:
