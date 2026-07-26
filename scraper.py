@@ -11,6 +11,8 @@ We click on the business button one by one and extracts its information from its
 
 """
 
+import re
+
 from playwright.sync_api import sync_playwright
 
 #we do synchronously
@@ -88,7 +90,10 @@ def search_business(business,location):
             lead = extract_business_details(page, button)
 
             if lead is not None:
+                lead["Location"] = location
                 leads.append(lead)
+
+
         input("\nPress ENTER to close browser...")
         browser.close()
 
@@ -147,8 +152,103 @@ def extract_business_details(page,button):
         button.click()
         page.wait_for_timeout(3000)
 
+        links = page.get_by_role("link")
+
+        lead={
+            "Business Name": "",
+            "Phone Number": "",
+            "Website": "",
+            "Location": "",
+            "Email": ""
+        }
+
+        #lOOP THROUGH LINKS and store into lead for relevant info
+        count = links.count()
+
+        for i in range(count):
+            try:
+                text = links.nth(i).inner_text().strip()
+
+                if not text:
+                    continue
+
+                #Website
+
+                if text.startswith("http"):
+
+                    lead["Website"] = text.replace("›", "").strip()
+
+                    continue                
+
+                #Phone Number
+                if text.startswith("+"):
+
+                    lead["Phone Number"] = text
+
+                    continue
+
+                if (
+                    len(text) > 3
+                    and "http" not in text
+                    and "+" not in text
+                    and "Directions" not in text
+                    and "Sign in" not in text
+                    and "reviews" not in text.lower()
+                ):
+
+                    if lead["Business Name"] == "":
+                        lead["Business Name"] = text
+                        
+
+            except:
+                continue
+
+
     except Exception:
         print("Couldn't click business.")
         return None
 
-    return {}    
+    lead["Email"] = find_email(
+        page,
+        lead["Website"]
+    )
+    return lead
+
+def find_email(page,website):
+    """
+    Visit the business website
+
+    Finds email from the website
+    """
+
+
+    if website == "":
+        return ""
+
+    try:
+        page.goto(
+            website,
+            timeout=15000
+        )
+
+        page.wait_for_timeout(3000)
+
+        text = page.locator("body").inner_text()
+
+        #find email in the text 
+        emails = re.findall(
+
+            r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
+
+            #[user] + @[email].[TDL] 
+
+            text
+        )
+
+        if emails:
+            return emails[0]
+
+    except Exception:
+        pass
+
+    return ""
