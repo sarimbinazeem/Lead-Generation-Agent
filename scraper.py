@@ -70,7 +70,11 @@ def search_business(business,location):
             headless=False
         )
 
-        page = browser.new_page()
+        #context will have multiple pages instead of having only one at a tme
+        context = browser.new_context()
+
+        page = context.new_page()
+
 
         open_bing_maps(page)
 
@@ -95,6 +99,7 @@ def search_business(business,location):
 
 
         input("\nPress ENTER to close browser...")
+        context.close()
         browser.close()
 
         return leads
@@ -225,15 +230,16 @@ def find_email(page,website):
     if website == "":
         return ""
 
+    website_page = page.context.new_page()
     try:
-        page.goto(
+        website_page.goto(
             website,
             timeout=15000
         )
 
-        page.wait_for_timeout(3000)
+        website_page.wait_for_timeout(3000)
 
-        text = page.locator("body").inner_text()
+        text = website_page.locator("body").inner_text()
 
         #find email in the text 
         emails = re.findall(
@@ -250,5 +256,8 @@ def find_email(page,website):
 
     except Exception:
         pass
+
+    finally:
+        website_page.close()
 
     return ""
