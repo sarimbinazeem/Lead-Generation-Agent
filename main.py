@@ -24,10 +24,10 @@ def main():
 
         businesses = search_business(business_type, location  )  
 
-        print("\nBusinesses Found:")
+        print("\nLeads Returned")
 
-        for index,business in enumerate(businesses,start=1):
-            print(f"{index}. {business}")
+        for lead in businesses:
+            print(lead)
          
     
     except Exception as e:
