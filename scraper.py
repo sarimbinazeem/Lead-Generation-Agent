@@ -61,3 +61,22 @@ def perform_search(page, search_query):
 
     print(f"\nSearch completed for: {search_query}")
     
+def search_business(business,location):
+
+    search_query = f"{business} in {location}"
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=False
+        )
+
+        page = browser.new_page()
+
+        open_google_maps(page)
+
+        perform_search(page,search_query)
+
+        input("\nPress ENTER to close browser...")
+
+        browser.close()
+    
