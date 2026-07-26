@@ -194,11 +194,16 @@ def extract_business_details(page,button):
 
                 if (
                     len(text) > 3
-                    and "http" not in text
+                    and "http" not in text.lower()
                     and "+" not in text
                     and "Directions" not in text
                     and "Sign in" not in text
                     and "reviews" not in text.lower()
+                    and "all images" not in text.lower()
+                    and "openstreetmap" not in text.lower()
+                    and "tripadvisor" not in text.lower()
+                    and "view full review" not in text.lower()
+                    and "see all reviews" not in text.lower()
                 ):
 
                     if lead["Business Name"] == "":

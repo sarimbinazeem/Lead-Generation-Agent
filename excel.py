@@ -42,3 +42,5 @@ def save_to_excel(leads,business_type):
     filename = f"leads_{business_type.replace(' ', '_').lower()}.xlsx"
 
     workbook.save(filename)   
+
+    return filename
